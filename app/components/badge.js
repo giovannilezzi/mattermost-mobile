@@ -96,26 +96,13 @@ export default class Badge extends PureComponent {
 
     renderText = () => {
         const {count} = this.props;
-        let unreadCount = null;
-        let unreadIndicator = null;
+        let text = count.toString();
+        const extra = {};
         if (count < 0) {
-            unreadIndicator = (
-                <View
-                    style={[styles.text, this.props.countStyle]}
-                    onLayout={this.onLayout}
-                >
-                    <View style={[styles.unreadIndicator, {backgroundColor: this.props.countStyle.color}]}/>
-                </View>
-            );
-        } else {
-            unreadCount = (
-                <Text
-                    style={[styles.text, this.props.countStyle]}
-                    onLayout={this.onLayout}
-                >
-                    {count.toString()}
-                </Text>
-            );
+            text = '•';
+
+            //the extra margin is to align to the center?
+            extra.marginBottom = 1;
         }
         return (
             <View
@@ -123,8 +110,12 @@ export default class Badge extends PureComponent {
                 style={[styles.badge, this.props.style, {opacity: 0}]}
             >
                 <View style={styles.wrapper}>
-                    {unreadCount}
-                    {unreadIndicator}
+                    <Text
+                        style={[styles.text, this.props.countStyle, extra]}
+                        onLayout={this.onLayout}
+                    >
+                        {text}
+                    </Text>
                 </View>
             </View>
         );
@@ -162,16 +153,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         justifyContent: 'center',
-        marginBottom: -1,
     },
     text: {
         fontSize: 14,
         color: 'white',
-    },
-    unreadIndicator: {
-        height: 4,
-        width: 4,
-        backgroundColor: '#444',
-        borderRadius: 4,
     },
 });

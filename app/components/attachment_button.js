@@ -42,7 +42,6 @@ export default class AttachmentButton extends PureComponent {
         theme: PropTypes.object.isRequired,
         uploadFiles: PropTypes.func.isRequired,
         wrapper: PropTypes.bool,
-        extraOptions: PropTypes.arrayOf(PropTypes.object),
     };
 
     static defaultProps = {
@@ -53,7 +52,6 @@ export default class AttachmentButton extends PureComponent {
         canTakePhoto: true,
         canTakeVideo: true,
         maxFileCount: 5,
-        extraOptions: null,
     };
 
     static contextTypes = {
@@ -61,10 +59,10 @@ export default class AttachmentButton extends PureComponent {
     };
 
     attachPhotoFromCamera = () => {
-        return this.attachFileFromCamera('photo', 'camera');
+        return this.attachFileFromCamera('photo');
     };
 
-    attachFileFromCamera = async (mediaType, source) => {
+    attachFileFromCamera = async (mediaType) => {
         const {formatMessage} = this.context.intl;
         const options = {
             quality: 0.8,
@@ -92,7 +90,7 @@ export default class AttachmentButton extends PureComponent {
             },
         };
 
-        const hasPhotoPermission = await this.hasPhotoPermission(source);
+        const hasPhotoPermission = await this.hasPhotoPermission();
 
         if (hasPhotoPermission) {
             ImagePicker.launchCamera(options, (response) => {
@@ -141,7 +139,7 @@ export default class AttachmentButton extends PureComponent {
     };
 
     attachVideoFromCamera = () => {
-        return this.attachFileFromCamera('video', 'camera');
+        return this.attachFileFromCamera('video');
     };
 
     attachVideoFromLibraryAndroid = () => {
@@ -206,11 +204,11 @@ export default class AttachmentButton extends PureComponent {
         }
     };
 
-    hasPhotoPermission = async (source) => {
+    hasPhotoPermission = async () => {
         if (Platform.OS === 'ios') {
             const {formatMessage} = this.context.intl;
             let permissionRequest;
-            const hasPermissionToStorage = await Permissions.check(source || 'photo');
+            const hasPermissionToStorage = await Permissions.check('photo');
 
             switch (hasPermissionToStorage) {
             case PermissionTypes.UNDETERMINED:
@@ -295,13 +293,13 @@ export default class AttachmentButton extends PureComponent {
                         defaultMessage: 'To upload images from your Android device, please change your permission settings.',
                     }),
                     [
+                        grantOption,
                         {
                             text: formatMessage({
                                 id: 'mobile.android.permission_denied_dismiss',
                                 defaultMessage: 'Dismiss',
                             }),
                         },
-                        grantOption,
                     ]
                 );
                 return false;
@@ -353,7 +351,6 @@ export default class AttachmentButton extends PureComponent {
             fileCount,
             maxFileCount,
             onShowFileMaxWarning,
-            extraOptions,
         } = this.props;
 
         if (fileCount === maxFileCount) {
@@ -416,14 +413,6 @@ export default class AttachmentButton extends PureComponent {
                     defaultMessage: 'Browse Files',
                 },
                 icon: 'file',
-            });
-        }
-
-        if (extraOptions) {
-            extraOptions.forEach((option) => {
-                if (option !== null) {
-                    items.push(option);
-                }
             });
         }
 
@@ -490,3 +479,4 @@ const style = StyleSheet.create({
         justifyContent: 'center',
     },
 });
+
