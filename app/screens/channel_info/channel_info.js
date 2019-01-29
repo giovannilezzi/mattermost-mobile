@@ -11,7 +11,7 @@ import {
     View,
 } from 'react-native';
 
-import {General, Users} from 'mattermost-redux/constants';
+import {General} from 'mattermost-redux/constants';
 import EventEmitter from 'mattermost-redux/utils/event_emitter';
 
 import StatusBar from 'app/components/status_bar';
@@ -57,7 +57,6 @@ export default class ChannelInfo extends PureComponent {
         isFavorite: PropTypes.bool.isRequired,
         canManageUsers: PropTypes.bool.isRequired,
         canEditChannel: PropTypes.bool.isRequired,
-        ignoreChannelMentions: PropTypes.bool.isRequired,
     };
 
     static contextTypes = {
@@ -70,7 +69,6 @@ export default class ChannelInfo extends PureComponent {
         this.state = {
             isFavorite: props.isFavorite,
             isMuted: props.isChannelMuted,
-            ignoreChannelMentions: props.ignoreChannelMentions,
         };
     }
 
@@ -94,12 +92,7 @@ export default class ChannelInfo extends PureComponent {
             isMuted = nextProps.isChannelMuted;
         }
 
-        let ignoreChannelMentions = this.state.ignoreChannelMentions;
-        if (ignoreChannelMentions !== nextProps.ignoreChannelMentions) {
-            ignoreChannelMentions = nextProps.ignoreChannelMentions;
-        }
-
-        this.setState({isFavorite, isMuted, ignoreChannelMentions});
+        this.setState({isFavorite, isMuted});
     }
 
     close = (redirect = true) => {
@@ -322,18 +315,6 @@ export default class ChannelInfo extends PureComponent {
         updateChannelNotifyProps(currentUserId, currentChannel.id, opts);
     });
 
-    handleIgnoreChannelMentions = preventDoubleTap(() => {
-        const {actions, currentChannel, currentUserId, ignoreChannelMentions} = this.props;
-        const {updateChannelNotifyProps} = actions;
-
-        const opts = {
-            ignore_channel_mentions: ignoreChannelMentions ? Users.IGNORE_CHANNEL_MENTIONS_OFF : Users.IGNORE_CHANNEL_MENTIONS_ON,
-        };
-
-        this.setState({ignoreChannelMentions: !ignoreChannelMentions});
-        updateChannelNotifyProps(currentUserId, currentChannel.id, opts);
-    });
-
     showPermalinkView = (postId) => {
         const {actions, navigator} = this.props;
 
@@ -426,16 +407,6 @@ export default class ChannelInfo extends PureComponent {
                     detail={this.state.isMuted}
                     icon='bell-slash-o'
                     textId={t('channel_notifications.muteChannel.settings')}
-                    togglable={true}
-                    theme={theme}
-                />
-                <View style={style.separator}/>
-                <ChannelInfoRow
-                    action={this.handleIgnoreChannelMentions}
-                    defaultMessage='Ignore @channel, @here, @all'
-                    detail={this.state.ignoreChannelMentions}
-                    icon='at'
-                    textId={t('channel_notifications.ignoreChannelMentions.settings')}
                     togglable={true}
                     theme={theme}
                 />

@@ -70,7 +70,6 @@ export default class NetworkIndicator extends PureComponent {
         const navBar = this.getNavBarHeight(props.isLandscape);
         this.top = new Animated.Value(navBar - HEIGHT);
         this.opacity = 0;
-        this.clearNotificationTimeout = null;
 
         this.backgroundColor = new Animated.Value(0);
         this.firstRun = true;
@@ -89,17 +88,8 @@ export default class NetworkIndicator extends PureComponent {
     }
 
     componentDidUpdate(prevProps) {
-        const {
-            currentChannelId: prevChannelId,
-            isLandscape: prevIsLandscape,
-            websocketStatus: previousWebsocketStatus,
-        } = prevProps;
-        const {currentChannelId, isLandscape, websocketErrorCount, websocketStatus} = this.props;
-
-        if (currentChannelId !== prevChannelId && this.clearNotificationTimeout) {
-            clearTimeout(this.clearNotificationTimeout);
-            this.clearNotificationTimeout = null;
-        }
+        const {isLandscape: prevIsLandscape, websocketStatus: previousWebsocketStatus} = prevProps;
+        const {isLandscape, websocketErrorCount, websocketStatus} = this.props;
 
         if (isLandscape !== prevIsLandscape) {
             const navBar = this.getNavBarHeight(isLandscape);
@@ -230,12 +220,7 @@ export default class NetworkIndicator extends PureComponent {
             this.connect(true);
 
             if (currentChannelId) {
-                // Clear the notifications for the current channel after one second
-                // this is done so we can cancel it in case the app is brought to the
-                // foreground by tapping a notification from another channel
-                this.clearNotificationTimeout = setTimeout(() => {
-                    PushNotifications.clearChannelNotifications(currentChannelId);
-                }, 1000);
+                PushNotifications.clearChannelNotifications(currentChannelId);
             }
         } else {
             this.handleWebSocket(false);
