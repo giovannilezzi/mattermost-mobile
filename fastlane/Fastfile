@@ -321,10 +321,45 @@ platform :ios do
                                })
   end
 
+### GPPHACK INIT ###
+desc 'create certificate/profile'
+lane :create_certprof do
+    match(shallow_clone: false, readonly: false, verbose: true)
+end
+### GPPHACK END ###
+
+### GPPHACK INIT ###
+    def hack_build_ios()
+        if ENV['BUILD_FOR_RELEASE'] == 'true'
+            build_conf="Release"#Release
+        else
+            build_conf="Debug"#Release
+        end
+        disable_automatic_code_signing(path: './ios/Mattermost.xcodeproj')
+        update_project_provisioning(
+            xcodeproj: './ios/Mattermost.xcodeproj',
+            profile: ENV["sigh_#{ENV['MAIN_APP_IDENTIFIER']}_#{ENV['MATCH_TYPE']}_profile-path"],
+            build_configuration: build_conf,
+            target_filter: /Mattermost\z/, # matches name or type of a target
+        )
+        update_project_provisioning(
+            xcodeproj: './ios/Mattermost.xcodeproj',
+            profile: ENV["sigh_#{ENV['EXTENSION_APP_IDENTIFIER']}_#{ENV['MATCH_TYPE']}_profile-path"],
+            build_configuration: build_conf,
+            target_filter: "MattermostShare", # matches name or type of a target
+        )
+    end
+### GPPHACK END ###
+
+
   def build_ios()
     app_name =  ENV['APP_NAME'] || 'Mattermost Beta'
     config_mode = ENV['BUILD_FOR_RELEASE'] == 'true' ? 'Release' : 'Debug'
     method = ENV['IOS_BUILD_EXPORT_METHOD'].nil? || ENV['IOS_BUILD_EXPORT_METHOD'].empty? ? 'ad-hoc' : ENV['IOS_BUILD_EXPORT_METHOD']
+
+    ### GPPHACK INIT ###
+    hack_build_ios
+    ### GPPHACK END ###
 
     gym(
         clean: true,
