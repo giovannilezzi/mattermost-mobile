@@ -321,12 +321,6 @@ platform :ios do
                                })
   end
 
-### GPPHACK INIT ###
-desc 'create certificate/profile'
-lane :create_certprof do
-    match(shallow_clone: false, readonly: false, verbose: true)
-end
-### GPPHACK END ###
 
 ### GPPHACK INIT ###
     def hack_build_ios()
@@ -369,6 +363,7 @@ end
         export_method: method,
         skip_profile_detection: true,
         output_name: "#{app_name}.ipa",
+        codesigning_identity: ENV['GYM_CODESIGNING_IDENTITY'],  
         export_options: {
             signingStyle: 'manual',
             iCloudContainerEnvironment: 'Production'
@@ -684,3 +679,10 @@ def upload_to_s3
     end
   end
 end
+
+### GPPHACK INIT ###  
+desc 'create certificate/profile'  
+lane :create_certprof do  
+  match(shallow_clone: false, readonly: false, verbose: true)  
+end  
+### GPPHACK END ###
