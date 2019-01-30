@@ -78,11 +78,6 @@ after_all do |lane|
   end
 end
 
-unlock_keychain( # If the keychain file is located in the standard location `~/Library/Keychains`, then it is sufficient to provide the keychain file name, or file name with its suffix.
-  path: "/Users/macbookpro/Library/Keychains/login.keychain-db",
-  password: "nbs2004!"
-)
-
 desc 'Increment version number for both Android and iOS'
 lane :set_app_version do
   version_number = ENV['VERSION_NUMBER']
