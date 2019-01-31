@@ -366,11 +366,7 @@ platform :ios do
         codesigning_identity: ENV['GYM_CODESIGNING_IDENTITY'],  
         export_options: {
             signingStyle: 'manual',
-            iCloudContainerEnvironment: 'Production',
-            provisioningProfiles: {
-				      "it.nbsgroup.collab.nbs" => "cit.nbsgroup.collab.nbs adhoc",
-				      "it.nbsgroup.collab.nbs.CollabShare" => "it.nbsgroup.collab.nbs.CollabShare Development"
-			  }
+            iCloudContainerEnvironment: 'Production'
         }
     )
   end
